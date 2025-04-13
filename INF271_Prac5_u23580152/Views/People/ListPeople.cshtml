@@ -1,0 +1,154 @@
+﻿@model IEnumerable<INF271_Prac5_u23580152.Models.PersonModel>
+
+@{
+    ViewBag.Title = "List of People";
+}
+
+<h2>List of People</h2>
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<p>
+    Search string: <input type="text" id="search" size="20" name="search">
+    <button onclick="ST()">Submit</button>
+</p>
+
+<table class="table table-bordered">
+
+    <tr style="background-color: darkgreen; color: white; ">
+        <th width="16%">
+            @Html.DisplayNameFor(model => model.StuNumber)
+        </th>
+        <th width="16%">
+            @Html.DisplayNameFor(model => model.FirstName)
+        </th>
+        <th width="16%">
+            @Html.DisplayNameFor(model => model.LastName)
+        </th>
+        <th class="text-center" width="16%">
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+
+        <th class="text-center" width="16%">
+            Delete
+        </th>
+    </tr>
+
+    <tbody id="info">
+        @foreach (var item in Model) 
+        {
+            <tr class="rowcontent">
+                <td width="16%">
+                    @Html.DisplayFor(modelItem => item.StuNumber)
+                </td>
+                <td width="16%">
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td width="16%">
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td class="text-center" width="16%">
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>              
+                
+                <td class="text-center" width="16%">
+                    <button type="button" class="btn btn-success btn-sm" onclick="delete_row(this)">Delete</button>
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
+
+
+<p>
+    <button onclick="Save()">Save to local storage</button>
+    <button onclick="Retrieve()">Retrieve from local storage</button>
+    <button onclick="Clear()">Clear local storage</button>
+</p>
+
+@section scripts {
+    <script type="text/javascript">
+
+        
+        var tableBody = document.getElementById("info");
+        
+        //------------------------------------------------
+        function Save() {
+            var tableBody = document.getElementById("info");
+            var tableData = "";
+
+            for (var i = 0, row; row = tableBody.rows[i]; i++) {
+                for (var j = 0, col; col = row.cells[j]; j++) {
+                    tableData += col.innerHTML + "|";
+                }
+                tableData += ",";
+            }
+
+            localStorage.setItem("tableData", tableData);
+        }
+
+        //------------------------------------------------
+
+        //clearing local storage
+        function Clear() {
+            localStorage.clear();
+        }
+
+         //--------------------------------------------
+        function Retrieve() {
+         
+            var tableData = localStorage.getItem("tableData");
+
+            tableBody.innerHTML = "";
+
+            var rows = tableData.split(",");
+            for (var i = 0; i < rows.length - 1; i++) {
+                var cells = rows[i].split("|");
+                var row = document.createElement("tr");
+
+                for (var j = 0; j < cells.length - 1; j++) {
+                    var cell = document.createElement("td");
+                    cell.innerHTML = cells[j];
+                    row.appendChild(cell);
+                }
+
+                tableBody.appendChild(row);
+            }
+        }
+         //--------------------------------------------
+
+        //search function getting the rows
+        var d = document.getElementById("info");
+        const x = d.children;
+        console.log(x);
+
+        //search function - one can use string functions as well
+        function ST() {
+            var s = document.getElementById("search").value;
+            const pattern = new RegExp(s);
+            console.log(pattern);
+
+            for (let i = 0; i < x.length; i++) {
+
+                if (pattern.test(x[i].cells[1].innerText)) {
+                    x[i].style.color = "red";
+                    setTimeout(function () {
+                        x[i].style.color = "black";
+                    }, 3000);
+                }
+                    
+            }
+        }
+
+         
+
+        //function to delete specified row
+        function delete_row(e) {
+            e.parentElement.parentElement.remove();
+           
+        }
+
+        
+    </script>
+}
